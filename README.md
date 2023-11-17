@@ -48,13 +48,87 @@ As shown in the water level controller circuit given below, Ultrasonic sensor mo
 
 In this circuit Ultrasonic sensor module is placed at the top of bucket (water tank) for demonstration. This sensor module will read the distance between sensor module and water surface, and it will show the distance on LCD screen with message “Water Space in Tank is:”. It means we are here showing empty place of distance or volume for water instead of water level. Because of this functionality we can use this system in any water tank. When empty water level reaches at distance about 30 cm then Arduino turns ON the water pump by driving relay. And now LCD will show “LOW Water Level” “Motor turned ON”, and Relay status LED will start glowing.Now if the empty space reaches at distance about 12 cm arduino turns OFF the relay and LCD will show “Tank is full” “Motor Turned OFF”. Buzzer also beep for some time and relay status LED will turned OFF
 
-
-
 ## PROGRAM:
+```
+#include <LiquidCrystal.h>
+#define trigger 10
+#define echo 11
+#define motor 8
+#define buzzer 12
+#define led1 9
+#define led2 13
+#define led3 1
+LiquidCrystal lcd(7,6,5,4,3,2);
+float time=0,distance=0;
+int temp=0;
+void setup()
+{
+lcd.begin(16,2);
+pinMode(trigger,OUTPUT);
+pinMode(echo,INPUT);
+pinMode(motor, OUTPUT);
+pinMode(buzzer, OUTPUT);
+pinMode(led1, OUTPUT);
 
+pinMode(led2, OUTPUT);
+pinMode(led3, OUTPUT);
+}
+void loop()
+{
+lcd.clear();
+digitalWrite(trigger,LOW);
+delayMicroseconds(2);
+digitalWrite(trigger,HIGH);
+delayMicroseconds(10);
+digitalWrite(trigger,LOW);
+delayMicroseconds(2);
+time=pulseIn(echo,HIGH);
+distance=time*340/20000;
+lcd.clear();
+lcd.print("AWL CONTROL");
+delay(2000);
+if(distance<500)
+{
+digitalWrite(motor, LOW);
+digitalWrite(led1, HIGH);
+lcd.clear();
+lcd.print("Water Tank Full ");
+lcd.setCursor(0,1);
+lcd.print("Motor Turned OFF");
+delay(5000);
+digitalWrite(led1, LOW);
+}
+else if(distance>500 && distance<750)
+{
+digitalWrite(motor, LOW);
+digitalWrite(led2, HIGH);
+lcd.clear();
+lcd.print("Water Tank Full ");
+lcd.setCursor(0,1);
+lcd.print("Motor Turned OFF");
+delay(5000);
+digitalWrite(led2, LOW);
+}
+else if(distance>750)
+{
+digitalWrite(motor, HIGH);
+digitalWrite(buzzer, HIGH);
+digitalWrite(led3, HIGH);
+lcd.clear();
+lcd.print("LOW Water Level");
+lcd.setCursor(0,1);
+lcd.print("Motor Turned ON");
+delay(5000);
+digitalWrite(buzzer, LOW);
+digitalWrite(led3, LOW);
+}
+}
+```
 ## CIRCUIT DIAGRAM:
+![272827882-5f5a60c4-ad33-4c76-849d-c9bdf185adca](https://github.com/Jeevithha/Automatic-water-level-controller/assets/123623197/b7899c1f-6d43-490d-be59-9575047a0743)
 
 ## OUTPUT:
+![272828415-0fbf1b8e-69fd-4844-877a-55265db8de8d](https://github.com/Jeevithha/Automatic-water-level-controller/assets/123623197/98870b40-c0f2-45b1-813b-f0b0a03d3ac1)
 
 ## RESULT:
 Thus the water level of the tank was monitored and controlled using Arduino UNO controller.
